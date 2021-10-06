@@ -35,6 +35,9 @@ def read_core_file():
                 if list(row.keys()) != ['folder_path', 'duration']:
                     isFileValid = False
                     break
+                if not row['duration'].isnumeric():
+                    isFileValid = False
+                    break
                 addToTree(index=count, values=(
                     [count]+list(row.values())), iid=count, text='')
                 count += 1
@@ -94,7 +97,10 @@ def minify(p, val):
 def add_data():
     folder_path = selected_label.cget('text')
     duration = dur_entry.get()
-    print(folder_path, duration)
+    if folder_path == "" or folder_path == "(None Selected)" or folder_path == None:
+        return
+    if duration == None or duration == '' or not duration.isnumeric():
+        return
     add_data_to_file(folder_path=folder_path, duration=duration)
     remove_all_data_from_tree()
     read_core_file()

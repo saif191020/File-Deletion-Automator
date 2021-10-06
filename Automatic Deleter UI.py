@@ -43,11 +43,6 @@ def read_core_file():
             create_core_file()
 
 
-def remove_all_data_from_tree():
-    for record in tv.get_children():
-        tv.delete(record)
-
-
 def add_data_to_file(folder_path, duration):
     with open(CORE_FILE_PATH, mode='a', newline='') as csv_file:
         fieldnames = ['folder_path', 'duration']
@@ -60,23 +55,30 @@ def add_data_to_file(folder_path, duration):
         print("Folder Added")
 
 
+# Tree operations
+def remove_all_data_from_tree():
+    for record in treeview.get_children():
+        treeview.delete(record)
+
+
 def setUpTreeColumn():
-    tv['columns'] = ('Id', 'File Dir', 'Duration')
-    tv.column('#0', width=0, stretch=NO)
-    tv.column('Id', anchor=W, minwidth=30, width=30, stretch=NO)
-    tv.column('File Dir', anchor=CENTER, width=80)
-    tv.column('Duration', anchor=CENTER, width=80, minwidth=80, stretch=NO)
+    treeview['columns'] = ('Id', 'File Dir', 'Duration')
+    treeview.column('#0', width=0, stretch=NO)
+    treeview.column('Id', anchor=W, minwidth=30, width=30, stretch=NO)
+    treeview.column('File Dir', anchor=CENTER, width=80)
+    treeview.column('Duration', anchor=CENTER,
+                    width=80, minwidth=80, stretch=NO)
 
 
 def setUpTreeHeading():
-    tv.heading('#0', text='', anchor=CENTER)
-    tv.heading('Id', text='Id', anchor=W)
-    tv.heading('File Dir', text='File Dir', anchor=CENTER)
-    tv.heading('Duration', text='Duration', anchor=CENTER)
+    treeview.heading('#0', text='', anchor=CENTER)
+    treeview.heading('Id', text='Id', anchor=W)
+    treeview.heading('File Dir', text='File Dir', anchor=CENTER)
+    treeview.heading('Duration', text='Duration', anchor=CENTER)
 
 
 def addToTree(index, values, iid, text):
-    tv.insert(parent='', index=index, iid=iid, text=text, values=values)
+    treeview.insert(parent='', index=index, iid=iid, text=text, values=values)
 
 
 def minify(p, val):
@@ -85,6 +87,34 @@ def minify(p, val):
     val -= 3
     sv = val//2
     return p[0:sv] + "..."+p[-sv:]
+
+# UI Operations
+
+
+def add_data():
+    folder_path = selected_label.cget('text')
+    duration = dur_entry.get()
+    print(folder_path, duration)
+    add_data_to_file(folder_path=folder_path, duration=duration)
+    remove_all_data_from_tree()
+    read_core_file()
+
+
+def remove_data():
+    if treeview.selection() == () or treeview.selection() == None or len(treeview.selection()) == 0:
+        return
+    iid = treeview.selection()[0]
+    if iid == None or iid == "":
+        return
+    treeview.delete(iid)
+    records = []
+    for child in treeview.get_children():
+        records += [treeview.item(child)["values"]]
+    print(records)
+    create_core_file()
+    for record in records:
+        add_data_to_file(folder_path=record[1], duration=record[2])
+    read_core_file()
 
 
 def pick_folder():
@@ -110,11 +140,11 @@ tree_frame.pack(padx=10, pady=(10, 0), fill="x", expand="yes")
 # Scroll Bar for tree frame
 tree_scroll = Scrollbar(tree_frame)
 tree_scroll.pack(side=RIGHT, fill=Y)
-tv = Treeview(tree_frame, yscrollcommand=tree_scroll.set,
-              selectmode="extended")
+treeview = Treeview(tree_frame, yscrollcommand=tree_scroll.set,
+                    selectmode="extended")
 
-tv.pack(fill="x", expand="yes")
-tree_scroll.config(command=tv.yview)
+treeview.pack(fill="x", expand="yes")
+tree_scroll.config(command=treeview.yview)
 
 # Column
 setUpTreeColumn()
@@ -150,10 +180,11 @@ dur_label.grid(row=0, column=2, padx=(0, 5))
 dur_entry = Entry(file_frame)
 dur_entry.grid(row=0, column=3, sticky=W)
 
+
 command_frame = LabelFrame(root, text="Comamnd")
 command_frame.pack(padx=10, pady=(5, 10), ipady=5, fill="x", expand=True)
-add_button = Button(command_frame, text="Add")
-remove_button = Button(command_frame, text="Remove")
+add_button = Button(command_frame, text="Add", command=add_data)
+remove_button = Button(command_frame, text="Remove", command=remove_data)
 add_button.pack(side='left', fill="x", expand=True)
 remove_button.pack(side='right', fill="x", expand=True)
 

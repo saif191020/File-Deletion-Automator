@@ -35,6 +35,7 @@ Follow These Instruction.
    - Log File is a file that keeps track what is deleted
    - eg: say `C:\Users\(user_name)\documents` convert it as `C:\\Users\\(user_name)\\documents` and put it in `location` variable in `Automatic Deleter.py` and `Deleter_Script.py`
 2. Then press `win+R` type `shell:startup`
+
    ![Run Window image](images/run_window.png)
 3. In the new opened folder paste the `Deleter_Script.py`
 

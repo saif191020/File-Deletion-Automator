@@ -3,10 +3,13 @@ import os
 from tkinter import Tk, filedialog
 from tkinter import NO, CENTER, W, RIGHT, Y, N
 from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Labelframe, Scrollbar, Style, Treeview
+from types import resolve_bases
 
+# add your location here
+location = "C:\\Users\\saif1\\OneDrive\\Documents"
 
-CORE_FILE_PATH = "C:\\Users\\saif1\\OneDrive\\Documents\\delete_folders_list.csv"
-LOGS_FILE_PATH = "C:\\Users\\saif1\\OneDrive\\Documents\\delete_log.txt"
+CORE_FILE_PATH = location + "\\delete_folders_list.csv"
+LOGS_FILE_PATH = location+"\\delete_log.txt"
 
 
 def check_core_file_exists(): return os.path.isfile(CORE_FILE_PATH)
@@ -26,23 +29,27 @@ def read_core_file():
         create_core_file()
     else:
         isFileValid = True
+        reason = ""
         with open(CORE_FILE_PATH) as core_file:
             core_reader = csv.DictReader(
                 core_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             count = 0
+
             for row in core_reader:
                 print(row)
                 if list(row.keys()) != ['folder_path', 'duration']:
+                    reason = f'Wrong Key: {list(row.keys())}'
                     isFileValid = False
                     break
                 if not row['duration'].isnumeric():
+                    reason = f"Not numeric duration {row}"
                     isFileValid = False
                     break
                 addToTree(index=count, values=(
                     [count]+list(row.values())), iid=count, text='')
                 count += 1
         if not isFileValid:
-            print("Invalid File Provided. Re-Creating the File")
+            print("Invalid File Provided. Re-Creating the File"+reason)
             create_core_file()
 
 

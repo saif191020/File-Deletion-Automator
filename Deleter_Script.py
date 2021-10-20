@@ -3,8 +3,12 @@ from os import name
 import os.path
 from pathlib import Path
 import csv
-CORE_FILE_PATH = "C:\\Users\\saif1\\OneDrive\\Documents\\delete_folders_list.csv"
-LOGS_FILE_PATH = "C:\\Users\\saif1\\OneDrive\\Documents\\delete_log.txt"
+
+# add your location here
+location = "C:\\Users\\saif1\\OneDrive\\Documents"
+
+CORE_FILE_PATH = location + "\\delete_folders_list.csv"
+LOGS_FILE_PATH = location+"\\delete_log.txt"
 
 
 def check_core_file_exists(): return os.path.isfile(CORE_FILE_PATH)
